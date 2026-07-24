@@ -1,0 +1,300 @@
+{
+  "info": {
+    "_postman_id": "8ef3f541-1f94-4d94-81d3-6b65742934f5",
+    "name": "Rebound DLQ Licensing",
+    "description": "Collection para testar o micro de Licensing do Rebound DLQ no Requestly. Importe como Postman Collection v2.1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Activate License",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const data = typeof rq !== 'undefined' ? rq.response.json() : pm.response.json();",
+              "if (typeof rq !== 'undefined') {",
+              "  rq.test('license activated', function () { rq.expect(rq.response.code).to.equal(201); });",
+              "  rq.environment.set('license_instance_id', data.licenseInstanceId);",
+              "  rq.environment.set('license_key', data.licenseKey);",
+              "  rq.environment.set('license_token', data.licenseToken);",
+              "  rq.environment.set('installation_fingerprint', data.installationFingerprint);",
+              "  rq.environment.set('current_license_version', String(data.version));",
+              "  rq.environment.set('latest_license_version', String(data.version));",
+              "} else {",
+              "  pm.test('license activated', function () { pm.response.to.have.status(201); });",
+              "  pm.environment.set('license_instance_id', data.licenseInstanceId);",
+              "  pm.environment.set('license_key', data.licenseKey);",
+              "  pm.environment.set('license_token', data.licenseToken);",
+              "  pm.environment.set('installation_fingerprint', data.installationFingerprint);",
+              "  pm.environment.set('current_license_version', String(data.version));",
+              "  pm.environment.set('latest_license_version', String(data.version));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-admin-api-key",
+            "value": "{{admin_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"cus_selfhosted_acme\",\n  \"contractId\": \"con_enterprise_2026\",\n  \"installationName\": \"Acme Production\",\n  \"expiresAt\": \"2026-12-31T23:59:59.000Z\",\n  \"entitlements\": {\n    \"maxProjects\": 10,\n    \"maxUsers\": 30,\n    \"maxMonthlyEvents\": 250000,\n    \"maxRetentionDays\": 30,\n    \"aiAnalysisEnabled\": true,\n    \"aiMonthlyCredits\": 1000,\n    \"replayEnabled\": true,\n    \"webhooksEnabled\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/admin/licenses/activate",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "admin",
+            "licenses",
+            "activate"
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 - Check-In License",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const data = typeof rq !== 'undefined' ? rq.response.json() : pm.response.json();",
+              "if (typeof rq !== 'undefined') {",
+              "  rq.test('check-in accepted', function () { rq.expect(rq.response.code).to.equal(201); });",
+              "  rq.environment.set('current_license_version', String(data.version));",
+              "} else {",
+              "  pm.test('check-in accepted', function () { pm.response.to.have.status(201); });",
+              "  pm.environment.set('current_license_version', String(data.version));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"licenseToken\": \"{{license_token}}\",\n  \"installationFingerprint\": \"{{installation_fingerprint}}\",\n  \"currentLicenseVersion\": 0,\n  \"appVersion\": \"0.1.0\",\n  \"usage\": {\n    \"projects\": 1,\n    \"users\": 2,\n    \"monthlyEvents\": 100\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/licenses/check-in",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "licenses",
+            "check-in"
+          ]
+        }
+      }
+    },
+    {
+      "name": "03 - Get Current License",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (typeof rq !== 'undefined') {",
+              "  rq.test('current license returned', function () { rq.expect(rq.response.code).to.equal(200); });",
+              "} else {",
+              "  pm.test('current license returned', function () { pm.response.to.have.status(200); });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/licenses/{{license_instance_id}}/current",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "licenses",
+            "{{license_instance_id}}",
+            "current"
+          ]
+        }
+      }
+    },
+    {
+      "name": "04 - Reissue License",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const data = typeof rq !== 'undefined' ? rq.response.json() : pm.response.json();",
+              "if (typeof rq !== 'undefined') {",
+              "  rq.test('license reissued', function () { rq.expect(rq.response.code).to.equal(201); });",
+              "  rq.environment.set('latest_license_version', String(data.version));",
+              "} else {",
+              "  pm.test('license reissued', function () { pm.response.to.have.status(201); });",
+              "  pm.environment.set('latest_license_version', String(data.version));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-admin-api-key",
+            "value": "{{admin_api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expiresAt\": \"2027-12-31T23:59:59.000Z\",\n  \"entitlements\": {\n    \"maxProjects\": 25,\n    \"maxUsers\": 75,\n    \"maxMonthlyEvents\": 1000000,\n    \"maxRetentionDays\": 90,\n    \"aiAnalysisEnabled\": true,\n    \"aiMonthlyCredits\": 5000,\n    \"replayEnabled\": true,\n    \"webhooksEnabled\": true,\n    \"ssoEnabled\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/admin/licenses/{{license_instance_id}}/reissue",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "admin",
+            "licenses",
+            "{{license_instance_id}}",
+            "reissue"
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 - Check-In After Reissue",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const data = typeof rq !== 'undefined' ? rq.response.json() : pm.response.json();",
+              "if (typeof rq !== 'undefined') {",
+              "  rq.test('upgrade detected by check-in', function () { rq.expect(rq.response.code).to.equal(201); rq.expect(data.hasUpdate).to.equal(true); });",
+              "  rq.environment.set('current_license_version', String(data.version));",
+              "} else {",
+              "  pm.test('upgrade detected by check-in', function () { pm.response.to.have.status(201); pm.expect(data.hasUpdate).to.equal(true); });",
+              "  pm.environment.set('current_license_version', String(data.version));",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"licenseToken\": \"{{license_token}}\",\n  \"installationFingerprint\": \"{{installation_fingerprint}}\",\n  \"currentLicenseVersion\": {{current_license_version}},\n  \"appVersion\": \"0.1.0\",\n  \"usage\": {\n    \"projects\": 3,\n    \"users\": 12,\n    \"monthlyEvents\": 25000\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/licenses/check-in",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "licenses",
+            "check-in"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Negative - Invalid Fingerprint",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"licenseToken\": \"{{license_token}}\",\n  \"installationFingerprint\": \"fp_wrong_installation_9ef898dd4b3d4c7eb91bb6c64a6b5f55\",\n  \"currentLicenseVersion\": {{current_license_version}},\n  \"appVersion\": \"0.1.0\",\n  \"usage\": {\n    \"projects\": 1,\n    \"users\": 2,\n    \"monthlyEvents\": 100\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/licenses/check-in",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "licenses",
+            "check-in"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "admin_api_key",
+      "value": ""
+    },
+    {
+      "key": "license_instance_id",
+      "value": ""
+    },
+    {
+      "key": "license_key",
+      "value": ""
+    },
+    {
+      "key": "license_token",
+      "value": ""
+    },
+    {
+      "key": "installation_fingerprint",
+      "value": ""
+    },
+    {
+      "key": "current_license_version",
+      "value": "0"
+    },
+    {
+      "key": "latest_license_version",
+      "value": "0"
+    }
+  ]
+}
