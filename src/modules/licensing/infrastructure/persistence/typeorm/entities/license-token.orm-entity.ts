@@ -19,6 +19,9 @@ export class LicenseTokenOrmEntity {
   @Column({ name: 'token_hash', type: 'varchar', length: 128 })
   tokenHash!: string;
 
+  @Column({ name: 'license_key', type: 'text', nullable: true })
+  licenseKey!: string | null;
+
   @Column({ name: 'issued_at', type: 'timestamptz' })
   issuedAt!: Date;
 

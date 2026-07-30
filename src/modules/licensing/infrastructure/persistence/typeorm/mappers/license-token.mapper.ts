@@ -7,6 +7,7 @@ export class LicenseTokenMapper {
       id: orm.id,
       licenseInstanceId: orm.licenseInstanceId,
       tokenHash: orm.tokenHash,
+      licenseKey: orm.licenseKey ?? undefined,
       issuedAt: orm.issuedAt,
       expiresAt: orm.expiresAt,
       revokedAt: orm.revokedAt ?? undefined,
@@ -18,6 +19,7 @@ export class LicenseTokenMapper {
     orm.id = domain.id;
     orm.licenseInstanceId = domain.licenseInstanceId;
     orm.tokenHash = domain.tokenHash;
+    orm.licenseKey = domain.licenseKey ?? null;
     orm.issuedAt = domain.issuedAt;
     orm.expiresAt = domain.expiresAt;
     orm.revokedAt = domain.revokedAt ?? null;

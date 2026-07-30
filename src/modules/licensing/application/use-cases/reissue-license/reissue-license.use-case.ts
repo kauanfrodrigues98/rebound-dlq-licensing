@@ -4,6 +4,7 @@ import type { ClockPort } from '../../../../../shared/application/ports/clock.po
 import { ID_GENERATOR_PORT } from '../../../../../shared/application/ports/id-generator.port';
 import type { IdGeneratorPort } from '../../../../../shared/application/ports/id-generator.port';
 import { EntitlementSnapshot } from '../../../domain/entities/entitlement-snapshot.entity';
+import { LicenseToken } from '../../../domain/entities/license-token.entity';
 import { LicenseNotFoundError } from '../../../domain/errors/license-not-found.error';
 import { ENTITLEMENT_SNAPSHOT_REPOSITORY } from '../../ports/entitlement-snapshot.repository';
 import type { EntitlementSnapshotRepository } from '../../ports/entitlement-snapshot.repository';
@@ -11,6 +12,11 @@ import { LICENSE_INSTANCE_REPOSITORY } from '../../ports/license-instance.reposi
 import type { LicenseInstanceRepository } from '../../ports/license-instance.repository';
 import { LICENSE_SIGNATURE_PORT } from '../../ports/license-signature.port';
 import type { LicenseSignaturePort } from '../../ports/license-signature.port';
+import { LICENSE_TOKEN_HASHER_PORT } from '../../ports/license-token-hasher.port';
+import type { LicenseTokenHasherPort } from '../../ports/license-token-hasher.port';
+import { LICENSE_TOKEN_REPOSITORY } from '../../ports/license-token.repository';
+import type { LicenseTokenRepository } from '../../ports/license-token.repository';
+import { LicenseKeyCodec } from '../../services/license-key-codec';
 import { ReissueLicenseCommand } from './reissue-license.command';
 import { ReissueLicenseResult } from './reissue-license.result';
 
@@ -23,6 +29,10 @@ export class ReissueLicenseUseCase {
     private readonly entitlementSnapshots: EntitlementSnapshotRepository,
     @Inject(LICENSE_SIGNATURE_PORT)
     private readonly licenseSignature: LicenseSignaturePort,
+    @Inject(LICENSE_TOKEN_REPOSITORY)
+    private readonly licenseTokens: LicenseTokenRepository,
+    @Inject(LICENSE_TOKEN_HASHER_PORT)
+    private readonly tokenHasher: LicenseTokenHasherPort,
     @Inject(CLOCK_PORT)
     private readonly clock: ClockPort,
     @Inject(ID_GENERATOR_PORT)
@@ -38,6 +48,7 @@ export class ReissueLicenseUseCase {
       throw new LicenseNotFoundError(command.licenseInstanceId);
     }
 
+    const now = this.clock.now();
     const gracePeriodUntil = new Date(command.expiresAt);
     gracePeriodUntil.setDate(gracePeriodUntil.getDate() + 7);
     licenseInstance.reissue(command.expiresAt, gracePeriodUntil);
@@ -48,20 +59,37 @@ export class ReissueLicenseUseCase {
       version: licenseInstance.currentVersion,
       status: licenseInstance.status,
       entitlements: command.entitlements,
-      validFrom: this.clock.now(),
+      validFrom: now,
       validUntil: licenseInstance.expiresAt,
       gracePeriodUntil: licenseInstance.gracePeriodUntil,
-      createdAt: this.clock.now(),
+      createdAt: now,
     });
 
     const signature = await this.licenseSignature.sign(unsignedSnapshot);
     const snapshot = unsignedSnapshot.withSignature(signature);
+    const rawLicenseToken = this.idGenerator.generate('rbd_lic');
+    const licenseKey = LicenseKeyCodec.encode({
+      licenseToken: rawLicenseToken,
+      installationFingerprint: licenseInstance.installationFingerprint,
+    });
+    const licenseToken = LicenseToken.create({
+      id: this.idGenerator.generate('lic_tok'),
+      licenseInstanceId: licenseInstance.id,
+      tokenHash: this.tokenHasher.hash(rawLicenseToken),
+      licenseKey,
+      issuedAt: now,
+      expiresAt: gracePeriodUntil,
+    });
 
     await this.licenseInstances.save(licenseInstance);
     await this.entitlementSnapshots.save(snapshot);
+    await this.licenseTokens.save(licenseToken);
 
     return {
       licenseInstanceId: licenseInstance.id,
+      licenseKey,
+      licenseToken: rawLicenseToken,
+      installationFingerprint: licenseInstance.installationFingerprint,
       status: snapshot.status,
       version: snapshot.version,
       expiresAt: snapshot.validUntil,

@@ -19,6 +19,17 @@ export class TypeOrmLicenseTokenRepository implements LicenseTokenRepository {
     return orm ? LicenseTokenMapper.toDomain(orm) : null;
   }
 
+  async findLatestByLicenseInstanceId(
+    licenseInstanceId: string,
+  ): Promise<LicenseToken | null> {
+    const orm = await this.repository.findOne({
+      where: { licenseInstanceId },
+      order: { issuedAt: 'DESC' },
+    });
+
+    return orm ? LicenseTokenMapper.toDomain(orm) : null;
+  }
+
   async save(licenseToken: LicenseToken): Promise<void> {
     await this.repository.save(LicenseTokenMapper.toOrm(licenseToken));
   }

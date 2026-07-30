@@ -14,6 +14,7 @@ export interface LicenseListItemResponse {
   contractId: string;
   installationName: string;
   installationFingerprint: string;
+  licenseKey?: string;
   status: string;
   version: number;
   issuedAt: string;
@@ -49,6 +50,7 @@ export class LicensePresenter {
     contractId: string;
     installationName: string;
     installationFingerprint: string;
+    licenseKey?: string;
     status: string;
     version: number;
     issuedAt: Date;
@@ -62,6 +64,7 @@ export class LicensePresenter {
       contractId: result.contractId,
       installationName: result.installationName,
       installationFingerprint: result.installationFingerprint,
+      licenseKey: result.licenseKey,
       status: result.status,
       version: result.version,
       issuedAt: result.issuedAt.toISOString(),

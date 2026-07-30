@@ -79,10 +79,15 @@ export class ActivateLicenseUseCase {
     const signature = await this.licenseSignature.sign(unsignedSnapshot);
     const snapshot = unsignedSnapshot.withSignature(signature);
     const rawLicenseToken = this.idGenerator.generate('rbd_lic');
+    const licenseKey = LicenseKeyCodec.encode({
+      licenseToken: rawLicenseToken,
+      installationFingerprint,
+    });
     const licenseToken = LicenseToken.create({
       id: this.idGenerator.generate('lic_tok'),
       licenseInstanceId: licenseInstance.id,
       tokenHash: this.tokenHasher.hash(rawLicenseToken),
+      licenseKey,
       issuedAt: now,
       expiresAt: gracePeriodUntil,
     });
@@ -93,10 +98,7 @@ export class ActivateLicenseUseCase {
 
     return {
       licenseInstanceId: licenseInstance.id,
-      licenseKey: LicenseKeyCodec.encode({
-        licenseToken: rawLicenseToken,
-        installationFingerprint,
-      }),
+      licenseKey,
       licenseToken: rawLicenseToken,
       installationFingerprint,
       status: licenseInstance.status,

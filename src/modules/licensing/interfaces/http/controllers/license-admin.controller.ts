@@ -118,7 +118,12 @@ export class LicenseAdminController {
       entitlements: await this.resolveEntitlements(body.planId, body.entitlements),
     });
 
-    return LicensePresenter.toHttp(result);
+    return {
+      ...LicensePresenter.toHttp(result),
+      licenseKey: result.licenseKey,
+      licenseToken: result.licenseToken,
+      installationFingerprint: result.installationFingerprint,
+    };
   }
 
   private async resolveEntitlements(

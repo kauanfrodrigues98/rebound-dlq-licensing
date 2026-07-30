@@ -4,6 +4,7 @@ export interface ListLicenseItemResult {
   contractId: string;
   installationName: string;
   installationFingerprint: string;
+  licenseKey?: string;
   status: string;
   version: number;
   issuedAt: Date;

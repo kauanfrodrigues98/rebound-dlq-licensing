@@ -4,5 +4,6 @@ export const LICENSE_TOKEN_REPOSITORY = Symbol('LICENSE_TOKEN_REPOSITORY');
 
 export interface LicenseTokenRepository {
   findByTokenHash(tokenHash: string): Promise<LicenseToken | null>;
+  findLatestByLicenseInstanceId(licenseInstanceId: string): Promise<LicenseToken | null>;
   save(licenseToken: LicenseToken): Promise<void>;
 }

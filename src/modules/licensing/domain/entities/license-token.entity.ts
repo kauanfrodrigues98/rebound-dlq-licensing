@@ -2,6 +2,7 @@ export interface LicenseTokenProps {
   id: string;
   licenseInstanceId: string;
   tokenHash: string;
+  licenseKey?: string;
   issuedAt: Date;
   expiresAt: Date;
   revokedAt?: Date;
@@ -24,6 +25,10 @@ export class LicenseToken {
 
   get tokenHash(): string {
     return this.props.tokenHash;
+  }
+
+  get licenseKey(): string | undefined {
+    return this.props.licenseKey;
   }
 
   get issuedAt(): Date {
