@@ -4,6 +4,10 @@ const booleanFromEnv = z
   .union([z.boolean(), z.string()])
   .optional()
   .transform((value) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
     if (typeof value === 'boolean') {
       return value;
     }
