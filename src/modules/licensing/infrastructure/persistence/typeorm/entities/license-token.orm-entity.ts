@@ -6,7 +6,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity('license_tokens')
+@Entity({ name: 'license_tokens', schema: 'licensing' })
 export class LicenseTokenOrmEntity {
   @PrimaryColumn({ type: 'varchar', length: 80 })
   id!: string;

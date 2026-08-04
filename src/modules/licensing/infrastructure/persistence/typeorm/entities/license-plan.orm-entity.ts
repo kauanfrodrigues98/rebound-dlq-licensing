@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import type { LicensePlanCadence } from '../../../../domain/entities/license-plan.entity';
 
-@Entity('license_plans')
+@Entity({ name: 'license_plans', schema: 'licensing' })
 export class LicensePlanOrmEntity {
   @PrimaryColumn({ type: 'varchar', length: 80 })
   id!: string;

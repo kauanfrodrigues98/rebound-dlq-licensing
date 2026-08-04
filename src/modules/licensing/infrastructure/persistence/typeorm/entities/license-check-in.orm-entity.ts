@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-@Entity('license_check_ins')
+@Entity({ name: 'license_check_ins', schema: 'licensing' })
 export class LicenseCheckInOrmEntity {
   @PrimaryColumn({ type: 'varchar', length: 80 })
   id!: string;

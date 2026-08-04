@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import type { LicenseStatus } from '../../../../domain/value-objects/license-status.vo';
 
-@Entity('license_instances')
+@Entity({ name: 'license_instances', schema: 'licensing' })
 export class LicenseInstanceOrmEntity {
   @PrimaryColumn({ type: 'varchar', length: 80 })
   id!: string;

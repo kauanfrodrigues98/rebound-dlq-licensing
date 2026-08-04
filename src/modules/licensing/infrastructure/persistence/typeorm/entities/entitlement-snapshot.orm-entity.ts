@@ -8,7 +8,7 @@ import {
 import { EntitlementValue } from '../../../../domain/entities/entitlement-snapshot.entity';
 import type { LicenseStatus } from '../../../../domain/value-objects/license-status.vo';
 
-@Entity('entitlement_snapshots')
+@Entity({ name: 'entitlement_snapshots', schema: 'licensing' })
 @Index(['licenseInstanceId', 'version'], { unique: true })
 export class EntitlementSnapshotOrmEntity {
   @PrimaryColumn({ type: 'varchar', length: 80 })
