@@ -6,6 +6,7 @@ export class CreateLicensePlans1777100000000 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
+        schema: 'licensing',
         name: 'license_plans',
         columns: [
           { name: 'id', type: 'varchar', length: '80', isPrimary: true },
@@ -25,21 +26,21 @@ export class CreateLicensePlans1777100000000 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'license_plans',
+      'licensing.license_plans',
       new TableIndex({
         name: 'idx_license_plans_active',
         columnNames: ['active'],
       }),
     );
     await queryRunner.createIndex(
-      'license_plans',
+      'licensing.license_plans',
       new TableIndex({
         name: 'idx_license_plans_cadence',
         columnNames: ['cadence'],
       }),
     );
     await queryRunner.createIndex(
-      'license_plans',
+      'licensing.license_plans',
       new TableIndex({
         name: 'idx_license_plans_sort_order',
         columnNames: ['sort_order'],
@@ -48,7 +49,7 @@ export class CreateLicensePlans1777100000000 implements MigrationInterface {
 
     await queryRunner.query(
       `
-      INSERT INTO license_plans (
+      INSERT INTO licensing.license_plans (
         id,
         name,
         description,
@@ -118,6 +119,6 @@ export class CreateLicensePlans1777100000000 implements MigrationInterface {
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('license_plans', true);
+    await queryRunner.dropTable('licensing.license_plans', true);
   }
 }

@@ -16,6 +16,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
     username: config.database.username,
     password: config.database.password,
     database: config.database.name,
+    schema: 'licensing',
     ssl: config.database.ssl ? { rejectUnauthorized: true } : false,
     synchronize: config.database.synchronize,
     autoLoadEntities: false,

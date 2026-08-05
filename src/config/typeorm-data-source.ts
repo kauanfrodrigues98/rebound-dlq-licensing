@@ -4,6 +4,7 @@ import { InitialLicensingSchema1721433600000 } from '../migrations/1721433600000
 import { CreateLicensePlans1777100000000 } from '../migrations/1777100000000-CreateLicensePlans';
 import { AddLicenseKeyToLicenseTokens1777200000000 } from '../migrations/1777200000000-AddLicenseKeyToLicenseTokens';
 import { MoveLicensingTablesToLicensingSchema1777300000000 } from '../migrations/1777300000000-MoveLicensingTablesToLicensingSchema';
+import { DropLegacyLicensingMigrationHistory1777400000000 } from '../migrations/1777400000000-DropLegacyLicensingMigrationHistory';
 import { EntitlementSnapshotOrmEntity } from '../modules/licensing/infrastructure/persistence/typeorm/entities/entitlement-snapshot.orm-entity';
 import { LicenseCheckInOrmEntity } from '../modules/licensing/infrastructure/persistence/typeorm/entities/license-check-in.orm-entity';
 import { LicenseInstanceOrmEntity } from '../modules/licensing/infrastructure/persistence/typeorm/entities/license-instance.orm-entity';
@@ -19,6 +20,7 @@ const options = {
   username: config.database.username,
   password: config.database.password,
   database: config.database.name,
+  schema: 'licensing',
   ssl: config.database.ssl ? { rejectUnauthorized: true } : false,
   synchronize: false,
   entities: [
@@ -33,6 +35,7 @@ const options = {
     CreateLicensePlans1777100000000,
     AddLicenseKeyToLicenseTokens1777200000000,
     MoveLicensingTablesToLicensingSchema1777300000000,
+    DropLegacyLicensingMigrationHistory1777400000000,
   ],
   migrationsTableName: 'typeorm_migrations',
 } satisfies DataSourceOptions;

@@ -6,6 +6,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
+        schema: 'licensing',
         name: 'license_instances',
         columns: [
           {
@@ -77,21 +78,21 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'license_instances',
+      'licensing.license_instances',
       new TableIndex({
         name: 'idx_license_instances_customer_id',
         columnNames: ['customer_id'],
       }),
     );
     await queryRunner.createIndex(
-      'license_instances',
+      'licensing.license_instances',
       new TableIndex({
         name: 'idx_license_instances_contract_id',
         columnNames: ['contract_id'],
       }),
     );
     await queryRunner.createIndex(
-      'license_instances',
+      'licensing.license_instances',
       new TableIndex({
         name: 'idx_license_instances_status',
         columnNames: ['status'],
@@ -100,6 +101,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
+        schema: 'licensing',
         name: 'license_tokens',
         columns: [
           {
@@ -142,7 +144,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
           {
             name: 'fk_license_tokens_license_instance',
             columnNames: ['license_instance_id'],
-            referencedTableName: 'license_instances',
+            referencedTableName: 'licensing.license_instances',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
           },
@@ -152,7 +154,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'license_tokens',
+      'licensing.license_tokens',
       new TableIndex({
         name: 'idx_license_tokens_license_instance_id',
         columnNames: ['license_instance_id'],
@@ -161,6 +163,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
+        schema: 'licensing',
         name: 'entitlement_snapshots',
         columns: [
           {
@@ -220,7 +223,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
           {
             name: 'fk_entitlement_snapshots_license_instance',
             columnNames: ['license_instance_id'],
-            referencedTableName: 'license_instances',
+            referencedTableName: 'licensing.license_instances',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
           },
@@ -230,14 +233,14 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'entitlement_snapshots',
+      'licensing.entitlement_snapshots',
       new TableIndex({
         name: 'idx_entitlement_snapshots_license_instance_id',
         columnNames: ['license_instance_id'],
       }),
     );
     await queryRunner.createIndex(
-      'entitlement_snapshots',
+      'licensing.entitlement_snapshots',
       new TableIndex({
         name: 'idx_entitlement_snapshots_status',
         columnNames: ['status'],
@@ -246,6 +249,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
+        schema: 'licensing',
         name: 'license_check_ins',
         columns: [
           {
@@ -290,7 +294,7 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
           {
             name: 'fk_license_check_ins_license_instance',
             columnNames: ['license_instance_id'],
-            referencedTableName: 'license_instances',
+            referencedTableName: 'licensing.license_instances',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
           },
@@ -300,14 +304,14 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'license_check_ins',
+      'licensing.license_check_ins',
       new TableIndex({
         name: 'idx_license_check_ins_license_instance_id',
         columnNames: ['license_instance_id'],
       }),
     );
     await queryRunner.createIndex(
-      'license_check_ins',
+      'licensing.license_check_ins',
       new TableIndex({
         name: 'idx_license_check_ins_checked_at',
         columnNames: ['checked_at'],
@@ -316,9 +320,9 @@ export class InitialLicensingSchema1721433600000 implements MigrationInterface {
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('license_check_ins', true);
-    await queryRunner.dropTable('entitlement_snapshots', true);
-    await queryRunner.dropTable('license_tokens', true);
-    await queryRunner.dropTable('license_instances', true);
+    await queryRunner.dropTable('licensing.license_check_ins', true);
+    await queryRunner.dropTable('licensing.entitlement_snapshots', true);
+    await queryRunner.dropTable('licensing.license_tokens', true);
+    await queryRunner.dropTable('licensing.license_instances', true);
   }
 }

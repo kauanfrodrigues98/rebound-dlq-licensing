@@ -7,7 +7,7 @@ export class AddLicenseKeyToLicenseTokens1777200000000
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
-      'license_tokens',
+      'licensing.license_tokens',
       new TableColumn({
         name: 'license_key',
         type: 'text',
@@ -17,6 +17,6 @@ export class AddLicenseKeyToLicenseTokens1777200000000
   }
 
   async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropColumn('license_tokens', 'license_key');
+    await queryRunner.dropColumn('licensing.license_tokens', 'license_key');
   }
 }
