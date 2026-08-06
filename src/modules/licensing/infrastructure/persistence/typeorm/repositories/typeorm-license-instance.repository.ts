@@ -19,6 +19,15 @@ export class TypeOrmLicenseInstanceRepository implements LicenseInstanceReposito
     return orm ? LicenseInstanceMapper.toDomain(orm) : null;
   }
 
+  async findByContractId(contractId: string): Promise<LicenseInstance[]> {
+    const licenses = await this.repository.find({
+      where: { contractId },
+      order: { issuedAt: 'DESC' },
+    });
+
+    return licenses.map((license) => LicenseInstanceMapper.toDomain(license));
+  }
+
   async findAll(): Promise<LicenseInstance[]> {
     const licenses = await this.repository.find({
       order: { issuedAt: 'DESC' },

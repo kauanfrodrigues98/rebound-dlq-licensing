@@ -84,4 +84,9 @@ export class LicenseInstance {
     this.props.status = 'suspended';
     this.props.currentVersion += 1;
   }
+
+  revoke(): void {
+    this.props.status = 'revoked';
+    this.props.currentVersion += 1;
+  }
 }

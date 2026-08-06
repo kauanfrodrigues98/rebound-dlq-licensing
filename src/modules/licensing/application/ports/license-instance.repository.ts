@@ -6,6 +6,7 @@ export const LICENSE_INSTANCE_REPOSITORY = Symbol(
 
 export interface LicenseInstanceRepository {
   findById(id: string): Promise<LicenseInstance | null>;
+  findByContractId(contractId: string): Promise<LicenseInstance[]>;
   findAll(): Promise<LicenseInstance[]>;
   save(licenseInstance: LicenseInstance): Promise<void>;
 }

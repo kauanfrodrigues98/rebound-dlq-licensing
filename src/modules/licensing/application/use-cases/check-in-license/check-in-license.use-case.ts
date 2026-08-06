@@ -3,6 +3,7 @@ import { CLOCK_PORT } from '../../../../../shared/application/ports/clock.port';
 import type { ClockPort } from '../../../../../shared/application/ports/clock.port';
 import { InstallationFingerprintMismatchError } from '../../../domain/errors/installation-fingerprint-mismatch.error';
 import { InvalidLicenseTokenError } from '../../../domain/errors/invalid-license-token.error';
+import { LicenseNotActiveError } from '../../../domain/errors/license-not-active.error';
 import { LicenseNotFoundError } from '../../../domain/errors/license-not-found.error';
 import { ENTITLEMENT_SNAPSHOT_REPOSITORY } from '../../ports/entitlement-snapshot.repository';
 import type { EntitlementSnapshotRepository } from '../../ports/entitlement-snapshot.repository';
@@ -49,6 +50,10 @@ export class CheckInLicenseUseCase {
 
     if (!licenseInstance.matchesFingerprint(command.installationFingerprint)) {
       throw new InstallationFingerprintMismatchError();
+    }
+
+    if (licenseInstance.status !== 'active') {
+      throw new LicenseNotActiveError(licenseInstance.status);
     }
 
     const snapshot =

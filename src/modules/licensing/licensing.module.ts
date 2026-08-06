@@ -7,9 +7,11 @@ import { NodeIdGeneratorAdapter } from '../../shared/infrastructure/crypto/node-
 import { SystemClockAdapter } from '../../shared/infrastructure/clock/system-clock.adapter';
 import { ActivateLicenseUseCase } from './application/use-cases/activate-license/activate-license.use-case';
 import { CheckInLicenseUseCase } from './application/use-cases/check-in-license/check-in-license.use-case';
+import { GetActiveContractLicenseUseCase } from './application/use-cases/get-active-contract-license/get-active-contract-license.use-case';
 import { GetCurrentLicenseUseCase } from './application/use-cases/get-current-license/get-current-license.use-case';
 import { ListLicensesUseCase } from './application/use-cases/list-licenses/list-licenses.use-case';
 import { ReissueLicenseUseCase } from './application/use-cases/reissue-license/reissue-license.use-case';
+import { RevokeContractLicensesUseCase } from './application/use-cases/revoke-contract-licenses/revoke-contract-licenses.use-case';
 import { LicensePlanCatalogService } from './application/services/license-plan-catalog.service';
 import { ENTITLEMENT_SNAPSHOT_REPOSITORY } from './application/ports/entitlement-snapshot.repository';
 import { INSTALLATION_FINGERPRINT_GENERATOR_PORT } from './application/ports/installation-fingerprint-generator.port';
@@ -76,10 +78,12 @@ const licensePersistenceAdapters = config.database.enabled
   providers: [
     ActivateLicenseUseCase,
     CheckInLicenseUseCase,
+    GetActiveContractLicenseUseCase,
     GetCurrentLicenseUseCase,
     LicensePlanCatalogService,
     ListLicensesUseCase,
     ReissueLicenseUseCase,
+    RevokeContractLicensesUseCase,
     AdminApiKeyGuard,
     {
       provide: CLOCK_PORT,

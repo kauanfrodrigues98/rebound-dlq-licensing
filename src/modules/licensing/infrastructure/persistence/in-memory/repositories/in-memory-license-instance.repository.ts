@@ -10,6 +10,14 @@ export class InMemoryLicenseInstanceRepository implements LicenseInstanceReposit
     return Promise.resolve(this.items.get(id) ?? null);
   }
 
+  findByContractId(contractId: string): Promise<LicenseInstance[]> {
+    const licenses = [...this.items.values()]
+      .filter((license) => license.contractId === contractId)
+      .sort((left, right) => right.issuedAt.getTime() - left.issuedAt.getTime());
+
+    return Promise.resolve(licenses);
+  }
+
   findAll(): Promise<LicenseInstance[]> {
     const licenses = [...this.items.values()].sort(
       (left, right) => right.issuedAt.getTime() - left.issuedAt.getTime(),

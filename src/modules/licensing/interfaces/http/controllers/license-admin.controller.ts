@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ZodValidationPipe } from '../../../../../shared/interfaces/http/pipes/zod-validation.pipe';
 import { ActivateLicenseUseCase } from '../../../application/use-cases/activate-license/activate-license.use-case';
+import { GetActiveContractLicenseUseCase } from '../../../application/use-cases/get-active-contract-license/get-active-contract-license.use-case';
 import { ListLicensesUseCase } from '../../../application/use-cases/list-licenses/list-licenses.use-case';
 import { ReissueLicenseUseCase } from '../../../application/use-cases/reissue-license/reissue-license.use-case';
+import { RevokeContractLicensesUseCase } from '../../../application/use-cases/revoke-contract-licenses/revoke-contract-licenses.use-case';
 import { LicensePlanCatalogService } from '../../../application/services/license-plan-catalog.service';
 import { activateLicenseRequestSchema } from '../dto/activate-license.request.dto';
 import type { ActivateLicenseRequestDto } from '../dto/activate-license.request.dto';
@@ -31,8 +33,10 @@ import { LicensePresenter } from '../presenters/license.presenter';
 export class LicenseAdminController {
   constructor(
     private readonly activateLicense: ActivateLicenseUseCase,
+    private readonly getActiveContractLicense: GetActiveContractLicenseUseCase,
     private readonly listLicenses: ListLicensesUseCase,
     private readonly reissueLicense: ReissueLicenseUseCase,
+    private readonly revokeContractLicenses: RevokeContractLicensesUseCase,
     private readonly planCatalog: LicensePlanCatalogService,
   ) {}
 
@@ -123,6 +127,29 @@ export class LicenseAdminController {
       licenseKey: result.licenseKey,
       licenseToken: result.licenseToken,
       installationFingerprint: result.installationFingerprint,
+    };
+  }
+
+  @Post('contracts/:contractId/revoke')
+  async revokeByContract(@Param('contractId') contractId: string) {
+    return this.revokeContractLicenses.execute({ contractId });
+  }
+
+  @Get('contracts/:contractId/active')
+  async getActiveByContract(@Param('contractId') contractId: string) {
+    const result = await this.getActiveContractLicense.execute({ contractId });
+
+    if (!result) {
+      return { license: null };
+    }
+
+    return {
+      license: {
+        ...LicensePresenter.toHttp(result),
+        licenseKey: result.licenseKey,
+        licenseToken: result.licenseToken,
+        installationFingerprint: result.installationFingerprint,
+      },
     };
   }
 
