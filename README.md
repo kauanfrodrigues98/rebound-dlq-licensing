@@ -85,3 +85,8 @@ Collection para testar manualmente:
 [docs/requestly/rebound-dlq-licensing.postman_collection.json](docs/requestly/rebound-dlq-licensing.postman_collection.json)
 
 Environment local com segredos fica em `.requestly-local/` e está ignorado pelo git.
+
+## License
+
+This project is proprietary software owned by Codify Labs / Rebound DLQ.
+Use, distribution, modification, or redistribution is only allowed under a valid commercial agreement or written permission.
