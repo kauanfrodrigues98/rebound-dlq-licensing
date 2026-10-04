@@ -1,3 +1,4 @@
+import { FinancialLifecycleService } from './application/services/financial-lifecycle.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { appConfig } from '../../config/app.config';
@@ -76,6 +77,7 @@ const licensePersistenceAdapters = config.database.enabled
   ],
   controllers: [LicensePublicController, LicenseAdminController],
   providers: [
+    FinancialLifecycleService,
     ActivateLicenseUseCase,
     CheckInLicenseUseCase,
     GetActiveContractLicenseUseCase,

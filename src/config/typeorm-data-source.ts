@@ -1,3 +1,5 @@
+import { SeedCloudLicensePlans1791097200000 } from '../migrations/1791097200000-SeedCloudLicensePlans';
+import { CreateFinancialLifecycle1791082800000 } from '../migrations/1791082800000-CreateFinancialLifecycle';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { appConfig } from './app.config';
 import { InitialLicensingSchema1721433600000 } from '../migrations/1721433600000-InitialLicensingSchema';
@@ -31,6 +33,8 @@ const options = {
     LicenseCheckInOrmEntity,
   ],
   migrations: [
+    SeedCloudLicensePlans1791097200000,
+    CreateFinancialLifecycle1791082800000,
     InitialLicensingSchema1721433600000,
     CreateLicensePlans1777100000000,
     AddLicenseKeyToLicenseTokens1777200000000,
