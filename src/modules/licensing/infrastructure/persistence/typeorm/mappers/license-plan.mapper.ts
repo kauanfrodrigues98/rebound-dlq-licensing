@@ -8,6 +8,7 @@ export class LicensePlanMapper {
       name: orm.name,
       description: orm.description,
       cadence: orm.cadence,
+      deployment: orm.deployment,
       featured: orm.featured,
       priceLabel: orm.priceLabel,
       entitlements: orm.entitlements,
@@ -24,6 +25,7 @@ export class LicensePlanMapper {
     orm.name = domain.name;
     orm.description = domain.description;
     orm.cadence = domain.cadence;
+    orm.deployment = domain.deployment;
     orm.featured = domain.featured;
     orm.priceLabel = domain.priceLabel;
     orm.entitlements = domain.entitlements;

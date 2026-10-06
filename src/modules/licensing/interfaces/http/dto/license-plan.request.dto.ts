@@ -11,6 +11,7 @@ export const licensePlanRequestSchema = z.object({
   name: z.string().min(2).max(120),
   description: z.string().min(2).max(500),
   cadence: z.enum(['monthly', 'annual', 'contract']),
+  deployment: z.enum(['cloud', 'self_hosted']).optional(),
   featured: z.boolean().default(false),
   priceLabel: z.string().min(1).max(80),
   active: z.boolean().default(true),

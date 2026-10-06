@@ -5,6 +5,7 @@ export interface LicensePlanProps {
   name: string;
   description: string;
   cadence: LicensePlanCadence;
+  deployment?: 'cloud' | 'self_hosted';
   featured: boolean;
   priceLabel: string;
   entitlements: Record<string, boolean | number | string>;
@@ -35,6 +36,10 @@ export class LicensePlan {
 
   get cadence(): LicensePlanCadence {
     return this.props.cadence;
+  }
+
+  get deployment(): 'cloud' | 'self_hosted' {
+    return this.props.deployment ?? 'self_hosted';
   }
 
   get featured(): boolean {
@@ -72,6 +77,7 @@ export class LicensePlan {
     this.props.name = props.name;
     this.props.description = props.description;
     this.props.cadence = props.cadence;
+    this.props.deployment = props.deployment ?? this.deployment;
     this.props.featured = props.featured;
     this.props.priceLabel = props.priceLabel;
     this.props.entitlements = { ...props.entitlements };

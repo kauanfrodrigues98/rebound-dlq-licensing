@@ -1,3 +1,4 @@
+import { FinancialLifecycleService } from '../../../application/services/financial-lifecycle.service';
 import {
   Body,
   Controller,
@@ -32,6 +33,7 @@ import { LicensePresenter } from '../presenters/license.presenter';
 @Controller('admin/licenses')
 export class LicenseAdminController {
   constructor(
+    private readonly financialLifecycle: FinancialLifecycleService,
     private readonly activateLicense: ActivateLicenseUseCase,
     private readonly getActiveContractLicense: GetActiveContractLicenseUseCase,
     private readonly listLicenses: ListLicensesUseCase,
@@ -40,6 +42,12 @@ export class LicenseAdminController {
     private readonly planCatalog: LicensePlanCatalogService,
   ) {}
 
+  @Post('contracts/:contractId/financial-state') financialState(
+    @Param('contractId') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.financialLifecycle.apply(id, body);
+  }
   @Get('plans')
   async listPlans(@Query('includeArchived') includeArchived?: string) {
     const plans = await this.planCatalog.list(includeArchived === 'true');
@@ -98,7 +106,10 @@ export class LicenseAdminController {
       contractId: body.contractId,
       installationName: body.installationName,
       expiresAt: new Date(body.expiresAt),
-      entitlements: await this.resolveEntitlements(body.planId, body.entitlements),
+      entitlements: await this.resolveEntitlements(
+        body.planId,
+        body.entitlements,
+      ),
     });
 
     return {
@@ -119,7 +130,10 @@ export class LicenseAdminController {
     const result = await this.reissueLicense.execute({
       licenseInstanceId: params.licenseInstanceId,
       expiresAt: new Date(body.expiresAt),
-      entitlements: await this.resolveEntitlements(body.planId, body.entitlements),
+      entitlements: await this.resolveEntitlements(
+        body.planId,
+        body.entitlements,
+      ),
     });
 
     return {

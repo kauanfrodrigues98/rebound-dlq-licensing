@@ -16,6 +16,7 @@ export interface LicensePlanCatalogItem {
   name: string;
   description: string;
   cadence: LicensePlanCadence;
+  deployment?: 'cloud' | 'self_hosted';
   featured: boolean;
   priceLabel: string;
   entitlements: Record<string, boolean | number | string>;
@@ -30,6 +31,7 @@ export interface SaveLicensePlanInput {
   name: string;
   description: string;
   cadence: LicensePlanCadence;
+  deployment?: 'cloud' | 'self_hosted';
   featured: boolean;
   priceLabel: string;
   entitlements: Record<string, boolean | number | string>;
@@ -98,6 +100,7 @@ export class LicensePlanCatalogService {
         name: input.name,
         description: input.description,
         cadence: input.cadence,
+        deployment: input.deployment ?? plan.deployment,
         featured: input.featured,
         priceLabel: input.priceLabel,
         entitlements: { ...input.entitlements },
@@ -137,6 +140,7 @@ export class LicensePlanCatalogService {
       planId: plan.id,
       planName: plan.name,
       cadence: plan.cadence,
+      deployment: plan.deployment,
       ...overrides,
     };
   }
@@ -178,6 +182,7 @@ export class LicensePlanCatalogService {
       name: plan.name,
       description: plan.description,
       cadence: plan.cadence,
+      deployment: plan.deployment,
       featured: plan.featured,
       priceLabel: plan.priceLabel,
       entitlements: plan.entitlements,
