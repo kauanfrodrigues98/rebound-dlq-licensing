@@ -23,6 +23,9 @@ export class LicensePlanOrmEntity {
   @Column({ type: 'varchar', length: 24 })
   cadence!: LicensePlanCadence;
 
+  @Column({ type: 'varchar', length: 24, default: 'self_hosted' })
+  deployment!: 'cloud' | 'self_hosted';
+
   @Index()
   @Column({ type: 'boolean', default: false })
   featured!: boolean;

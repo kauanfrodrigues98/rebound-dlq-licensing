@@ -36,7 +36,7 @@ export class CheckInLicenseUseCase {
     const tokenHash = this.tokenHasher.hash(command.licenseToken);
     const token = await this.licenseTokens.findByTokenHash(tokenHash);
 
-    if (!token?.isActive(now)) {
+    if (!token || token.revokedAt) {
       throw new InvalidLicenseTokenError();
     }
 
@@ -52,10 +52,6 @@ export class CheckInLicenseUseCase {
       throw new InstallationFingerprintMismatchError();
     }
 
-    if (licenseInstance.status !== 'active') {
-      throw new LicenseNotActiveError(licenseInstance.status);
-    }
-
     const snapshot =
       await this.entitlementSnapshots.findLatestByLicenseInstanceId(
         licenseInstance.id,
@@ -65,6 +61,15 @@ export class CheckInLicenseUseCase {
       throw new LicenseNotFoundError(licenseInstance.id);
     }
 
+    const financialRecovery =
+      snapshot.entitlements.financialManaged === true &&
+      (licenseInstance.status === 'active' ||
+        (licenseInstance.status === 'suspended' &&
+          snapshot.entitlements.financialSuspended === true));
+    if (licenseInstance.status !== 'active' && !financialRecovery)
+      throw new LicenseNotActiveError(licenseInstance.status);
+    if (!token.isActive(now) && !financialRecovery)
+      throw new InvalidLicenseTokenError();
     return {
       licenseInstanceId: licenseInstance.id,
       status: snapshot.status,

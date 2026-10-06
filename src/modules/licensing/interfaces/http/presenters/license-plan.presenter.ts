@@ -7,6 +7,7 @@ export class LicensePlanPresenter {
       name: plan.name,
       description: plan.description,
       cadence: plan.cadence,
+      deployment: plan.deployment,
       featured: plan.featured,
       priceLabel: plan.priceLabel,
       entitlements: plan.entitlements,

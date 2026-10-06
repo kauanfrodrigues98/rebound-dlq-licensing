@@ -79,13 +79,29 @@ export class FinancialLifecycleService {
         return prior.response;
       }
       const instances = await tx.query<Instance[]>(
-        `SELECT id,customer_id,current_version,status,expires_at FROM licensing.license_instances WHERE contract_id=$1 AND status IN ('active','suspended') ORDER BY id FOR UPDATE`,
+        `SELECT i.id,i.customer_id,i.current_version,i.status,i.expires_at FROM licensing.license_instances i
+         WHERE i.contract_id=$1 AND (i.status='active' OR (i.status='suspended' AND EXISTS (
+           SELECT 1 FROM licensing.entitlement_snapshots s WHERE s.license_instance_id=i.id AND s.version=i.current_version
+             AND s.entitlements->>'financialSuspended'='true'))) ORDER BY i.id FOR UPDATE`,
         [contractId],
       );
       const now = new Date(),
-        until = new Date(input.validUntil),
-        grace = new Date(until.getTime() + input.graceDays * 86400000);
-      if (input.state === 'active' && until <= now)
+        until = new Date(input.validUntil);
+      const suspendAt = input.entitlements.financialSuspendAt;
+      const financialGrace =
+        typeof suspendAt === 'string' && suspendAt ? new Date(suspendAt) : null;
+      if (financialGrace && !Number.isFinite(financialGrace.getTime()))
+        throw new BadRequestException('Prazo financeiro inválido.');
+      const grace =
+        financialGrace ??
+        new Date(until.getTime() + input.graceDays * 86400000);
+      const deferredSuspension =
+        input.entitlements.financialManaged === true &&
+        ['payment_attention', 'payment_restricted'].includes(
+          String(input.entitlements.financialAccessState),
+        ) &&
+        grace > now;
+      if (input.state === 'active' && until <= now && !deferredSuspension)
         throw new ConflictException('Período pago já expirou.');
       for (const row of instances) {
         if (row.customer_id !== input.customerId)
@@ -95,7 +111,10 @@ export class FinancialLifecycleService {
           licenseInstanceId: row.id,
           version: row.current_version + 1,
           status: input.state,
-          entitlements: input.entitlements,
+          entitlements: {
+            ...input.entitlements,
+            financialSuspended: input.state === 'suspended',
+          },
           validFrom: now,
           validUntil: until,
           gracePeriodUntil: grace,
@@ -113,7 +132,7 @@ export class FinancialLifecycleService {
             row.id,
             snapshot.version,
             input.state,
-            JSON.stringify(input.entitlements),
+            JSON.stringify(snapshot.entitlements),
             now,
             until,
             grace,
