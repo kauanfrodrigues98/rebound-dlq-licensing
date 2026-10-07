@@ -1,3 +1,4 @@
+import { licenseGracePeriod } from '../../../domain/license-grace-policy';
 import { Inject, Injectable } from '@nestjs/common';
 import { CLOCK_PORT } from '../../../../../shared/application/ports/clock.port';
 import type { ClockPort } from '../../../../../shared/application/ports/clock.port';
@@ -49,8 +50,10 @@ export class ReissueLicenseUseCase {
     }
 
     const now = this.clock.now();
-    const gracePeriodUntil = new Date(command.expiresAt);
-    gracePeriodUntil.setDate(gracePeriodUntil.getDate() + 7);
+    const gracePeriodUntil = licenseGracePeriod(
+      command.expiresAt,
+      command.entitlements,
+    );
     licenseInstance.reissue(command.expiresAt, gracePeriodUntil);
 
     const unsignedSnapshot = EntitlementSnapshot.create({
