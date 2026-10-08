@@ -1,10 +1,11 @@
-FROM node:22-alpine AS deps
+# Run Node/npm on the builder's native architecture, not under QEMU.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS deps
 WORKDIR /app
 
 COPY package-lock.json package.json ./
 RUN npm ci --ignore-scripts
 
-FROM node:22-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -12,11 +13,15 @@ COPY . .
 
 RUN npm run build
 
-FROM node:22-alpine AS prod-deps
+FROM --platform=$BUILDPLATFORM node:22-alpine AS prod-deps
 WORKDIR /app
 
 COPY package-lock.json package.json ./
-RUN npm ci --ignore-scripts --omit=dev
+RUN npm ci --ignore-scripts --omit=dev && \
+    if find node_modules -type f \( -name '*.node' -o -name '*.so' \) -print | grep -q .; then \
+      echo 'Native runtime addons require an architecture-specific build.' >&2; \
+      exit 1; \
+    fi
 
 FROM node:22-alpine AS production
 WORKDIR /app
